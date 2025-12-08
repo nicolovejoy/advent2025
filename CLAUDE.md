@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Advent of Code 2025 solutions repository using TypeScript with ts-node.
+This is an Advent of Code 2025 solutions repository using JavaScript with Node.js.
 
 ## Commands
 
@@ -12,16 +12,15 @@ This is an Advent of Code 2025 solutions repository using TypeScript with ts-nod
 
 ## Structure
 
-- `dayNN.ts` - Solution code for each day
-- `dayNN-input.txt` - Puzzle input for each day
-- `dayNN-puzzle.txt` - Puzzle descriptions
-- `dayNN-design.md` - Design notes and algorithm analysis
+- `dayNN/` - Each day's solution, input, and puzzle description
+- `LEARNINGS.md` - Key algorithmic insights from all days
 
 ## Solution Design Process
 
 When implementing a new puzzle solution:
 
 1. Ask the user design questions to understand their preferred approach
-2. Solutions must be efficient and scale well for large datasets
+2. **Efficiency is paramount** - Solutions must scale well; always prefer O(N) over O(N²), O(1) space over O(N) when practical
 3. Let the user drive algorithm/data structure choices through Q&A before coding
-4. document the user's decisions in a succinct "how we did this" kind of document to share with my friends.
+4. Document key learnings in LEARNINGS.md - succinct "how we did this" notes to share with friends
+5. output from code should be reasonably verbose to assist in debugging and understanding. but no more than 30 lines of output, ideally. so be frugal.
