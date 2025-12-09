@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "day03": "node day03/solution.js"
+    "day03": "node day03/solution.js",
+    "day04": "node day04/solution.js"
   },
   "keywords": [],
   "author": "",
