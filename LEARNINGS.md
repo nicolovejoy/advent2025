@@ -2,97 +2,50 @@
 
 ## Day 3: Lobby
 
-**Problem:** Given lines of digits (1-9), form the largest possible N-digit number by picking N digits in order.
+Pick N digits in order to form max number.
 
-### Part 1 (N=2)
-Pick two digits to form the max two-digit number.
+**Part 1 (N=2):** Reverse scan, track best ones digit. O(N), O(1).
 
-**Approach:** Reverse single-pass, O(N) time, O(1) space.
-- Scan right-to-left tracking `maxRight` (best ones digit seen)
-- At each position, candidate = `digit * 10 + maxRight`
-- Only compute when `maxRight > 0` (need a digit to the right)
+**Part 2 (N=12):** Greedy — pick largest digit that leaves room for remaining picks.
 
-### Part 2 (N=12)
-Pick twelve digits to form the max 12-digit number.
-
-**Approach:** Greedy selection, O(N*K) time where K=12.
-- For each of the 12 positions, greedily pick the largest available digit
-- Constraint: must leave enough digits to the right to complete the selection
-- For position `i`, can pick from `[start, len - (12 - i)]`
-
-**Key Insight:** When maximizing a number formed by ordered digit selection, prioritize leftmost digits (they have highest place value). The greedy approach works because picking a larger digit earlier always beats any combination with a smaller digit there.
+**Insight:** Leftmost digits dominate; greedy works.
 
 ## Day 4: Printing Department
 
-**Problem:** Grid of paper rolls (`@`). A roll is accessible by forklift if it has fewer than 4 adjacent rolls (8-directional neighbors).
+Grid of rolls (`@`). Accessible if <4 neighbors (8-directional).
 
-### Part 1
-Count accessible rolls.
+**Part 1:** Count accessible. O(rows × cols) scan.
 
-**Approach:** O(rows × cols) scan, O(1) extra space.
-- Parse into 2D array for clean `[row][col]` access
-- For each roll, count neighbors in 8 directions
-- Bounds checking: out-of-bounds treated as empty floor
-- Structure returns coordinates (not just count) to support Part 2 simulation
+**Part 2:** Remove accessible repeatedly until none remain. Full rescan each round — simple, fast enough.
 
-### Part 2
-Simulate removing accessible rolls until none remain. Count total removed.
-
-**Approach:** Iterative simulation, O(R × rows × cols) where R = number of rounds.
-- Copy grid (now need mutability)
-- Each round: find all accessible → remove them → repeat until none
-- Sum removals across all rounds
-
-**Design choice:** Full grid rescan vs. incremental (only recheck neighbors of removed). Chose full rescan — simpler code, fast enough for 140×140 grid.
-
-**Key Insight:** Removing rolls creates a "peeling" effect from the edges inward. Rolls with 4+ neighbors become accessible once their neighbors are removed. The process terminates when only tightly-packed cores remain (every remaining roll has 4+ neighbors).
+**Insight:** Peeling effect from edges inward. Terminates when all remaining rolls have 4+ neighbors.
 
 ## Day 5: Cafeteria
 
-**Problem:** Given inclusive ID ranges (e.g., `3-5`) and a list of IDs, count how many IDs fall within at least one range.
+Given ID ranges and a list of IDs, count matches.
 
-### Part 1
-**Approach: Sort + Two-pointer sweep** — O((R + I) log(R + I)) time, O(R + I) space.
+**Part 1:** Merge overlapping ranges, sort IDs, two-pointer sweep. O((R+I) log(R+I)).
 
-1. **Merge ranges:** Sort by start, merge overlapping intervals. `[3-5], [4-7], [10-12]` → `[3-7], [10-12]`
-2. **Sort IDs**
-3. **Sweep:** Walk both lists with two pointers. For each sorted ID, advance the range pointer past ranges that end before it, then check if the ID falls in the current range.
+**Part 2:** Count all unique IDs in ranges. Sum merged interval sizes — never enumerate.
 
-The key insight: sorting both lists lets us answer all queries in one linear pass—no repeated searches.
-
-### Part 2
-**Problem twist:** Ignore the ID list entirely. Count *all* unique fresh IDs across all ranges.
-
-**Approach:** Sum merged interval sizes — O(R log R) time, O(R) space.
-
-Once ranges are merged, each interval `[start, end]` contributes `end - start + 1` unique IDs. Just sum them.
-
-**Why merging matters:** The real input had ranges spanning up to 350 trillion total IDs. Without merging overlapping ranges, you'd either double-count or need an impossibly large bitmap. The merge-then-sum approach handles astronomical ranges trivially—we never enumerate individual IDs, just compute interval arithmetic.
+**Insight:** Interval merging handles astronomical ranges (350T+ IDs) via arithmetic, not enumeration.
 
 ## Day 6: Trash Compactor
 
-**Problem:** Parse a horizontally-arranged math worksheet. Numbers are stacked vertically in columns, with an operator (`+` or `*`) at the bottom. Columns are separated by blank-space columns.
+Parse vertically-stacked math problems with operator at bottom.
 
-### Part 1
-Standard reading: each whitespace-separated token is a number. Tokens at the same position across rows form a problem.
+**Part 1:** Split on whitespace, group tokens by position. Standard row-wise reading.
 
-**Approach:** Array of number arrays — O(rows × problems) time.
-- Split each row on whitespace, distribute tokens positionally
-- `problems[i]` = array of numbers for problem i
-- When operator row is reached, reduce each array and sum results
+**Part 2:** Column-wise reading — each character column is a digit (top=MSD). Parse as 2D character grid to preserve alignment.
 
-**Data model proposed by user:** `problems[col][row]` = number. Simple positional distribution.
+**Insight:** When alignment matters, use character grid instead of whitespace splitting. Splitting loses positional information.
 
-### Part 2
-**Twist:** Cephalopod math reads column-by-column. Each *character column* forms a number (top-to-bottom = MSD to LSD). Problems are processed right-to-left.
+## Day 7: Laboratories (Tachyon Manifold)
 
-**Approach:** Character grid — O(rows × cols) time.
-- Parse input as 2D character grid: `grid[row][col]`
-- Identify separator columns (all spaces in number rows)
-- Group consecutive non-separator columns into problem blocks
-- For each block (right-to-left), each character column becomes a number
-- Apply operator, sum results
+Beam moves down from `S`, splits left/right at `^` splitters.
 
-**Data model proposed by user:** `problems[col][row][char]` = character. The initial attempt using whitespace-split tokens failed because it lost character-position alignment. The character grid preserves exact spacing needed for column-wise number reconstruction.
+**Part 1:** Count splitter hits. Row-by-row with `Set<column>`. Set dedupes merged beams.
 
-**Key insight:** When input alignment matters, parse as a character grid rather than splitting on whitespace. Whitespace-splitting loses positional information that may be semantically significant.
+**Part 2:** Count timelines (many-worlds). Row-by-row with `Map<column, count>`. N timelines hitting splitter → N left + N right. Used BigInt (~6T timelines).
+
+**Insight:** Set → Map is classic Part 1 → Part 2 pattern. Existence vs cardinality — same algorithm, different data structure. Unidirectional movement means sweep beats graph traversal.

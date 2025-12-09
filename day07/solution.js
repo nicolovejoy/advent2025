@@ -1,23 +1,42 @@
 const fs = require('fs');
-const path = require('path');
 
-// Use sample.txt or input.txt based on command line arg
-const inputFile = process.argv[2] === 'sample' ? 'sample.txt' : 'input.txt';
-const input = fs.readFileSync(path.join(__dirname, inputFile), 'utf8').trim();
-const lines = input.split('\n');
+const inputFile = process.argv[2] || 'input.txt';
+const input = fs.readFileSync(inputFile, 'utf8').trim().split('\n');
 
-// Part 1
-function part1(lines) {
-  // TODO: implement
-  return 0;
+// Find starting position S
+let beams = new Set();
+for (let col = 0; col < input[0].length; col++) {
+  if (input[0][col] === 'S') {
+    beams.add(col);
+    break;
+  }
 }
 
-// Part 2
-function part2(lines) {
-  // TODO: implement
-  return 0;
+let splits = 0;
+
+// Process row by row
+for (let row = 1; row < input.length; row++) {
+  const line = input[row];
+  const newBeams = new Set();
+
+  for (const col of beams) {
+    if (col < 0 || col >= line.length) {
+      // Beam exits manifold
+      continue;
+    }
+
+    if (line[col] === '^') {
+      // Hit a splitter - emit left and right
+      splits++;
+      newBeams.add(col - 1);
+      newBeams.add(col + 1);
+    } else {
+      // Continue downward
+      newBeams.add(col);
+    }
+  }
+
+  beams = newBeams;
 }
 
-console.log(`Day 7 (${inputFile})`);
-console.log('Part 1:', part1(lines));
-console.log('Part 2:', part2(lines));
+console.log(`Splits: ${splits}`);
