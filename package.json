@@ -4,7 +4,15 @@
   "main": "index.js",
   "scripts": {
     "day03": "node day03/solution.js",
-    "day04": "node day04/solution.js"
+    "day04": "node day04/solution.js",
+    "day05": "node day05/solution.js",
+    "day06": "node day06/solution.js",
+    "day07": "node day07/solution.js",
+    "day08": "node day08/solution.js",
+    "day09": "node day09/solution.js",
+    "day10": "node day10/solution.js",
+    "day11": "node day11/solution.js",
+    "day12": "node day12/solution.js"
   },
   "keywords": [],
   "author": "",

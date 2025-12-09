@@ -22,5 +22,5 @@ When implementing a new puzzle solution:
 1. Ask the user design questions to understand their preferred approach
 2. **Efficiency is paramount** - Solutions must scale well; always prefer O(N) over O(N²), O(1) space over O(N) when practical
 3. Let the user drive algorithm/data structure choices through Q&A before coding
-4. Document key learnings in LEARNINGS.md - succinct "how we did this" notes to share with friends
+4. Document key learnings in LEARNINGS.md - be incrementally more verbose and thorough each day
 5. output from code should be reasonably verbose to assist in debugging and understanding. but no more than 30 lines of output, ideally. so be frugal.

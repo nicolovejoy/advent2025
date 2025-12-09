@@ -46,3 +46,25 @@ Simulate removing accessible rolls until none remain. Count total removed.
 **Design choice:** Full grid rescan vs. incremental (only recheck neighbors of removed). Chose full rescan — simpler code, fast enough for 140×140 grid.
 
 **Key Insight:** Removing rolls creates a "peeling" effect from the edges inward. Rolls with 4+ neighbors become accessible once their neighbors are removed. The process terminates when only tightly-packed cores remain (every remaining roll has 4+ neighbors).
+
+## Day 5: Cafeteria
+
+**Problem:** Given inclusive ID ranges (e.g., `3-5`) and a list of IDs, count how many IDs fall within at least one range.
+
+### Part 1
+**Approach: Sort + Two-pointer sweep** — O((R + I) log(R + I)) time, O(R + I) space.
+
+1. **Merge ranges:** Sort by start, merge overlapping intervals. `[3-5], [4-7], [10-12]` → `[3-7], [10-12]`
+2. **Sort IDs**
+3. **Sweep:** Walk both lists with two pointers. For each sorted ID, advance the range pointer past ranges that end before it, then check if the ID falls in the current range.
+
+The key insight: sorting both lists lets us answer all queries in one linear pass—no repeated searches.
+
+### Part 2
+**Problem twist:** Ignore the ID list entirely. Count *all* unique fresh IDs across all ranges.
+
+**Approach:** Sum merged interval sizes — O(R log R) time, O(R) space.
+
+Once ranges are merged, each interval `[start, end]` contributes `end - start + 1` unique IDs. Just sum them.
+
+**Why merging matters:** The real input had ranges spanning up to 350 trillion total IDs. Without merging overlapping ranges, you'd either double-count or need an impossibly large bitmap. The merge-then-sum approach handles astronomical ranges trivially—we never enumerate individual IDs, just compute interval arithmetic.
