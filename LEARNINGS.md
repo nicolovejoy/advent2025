@@ -68,3 +68,31 @@ The key insight: sorting both lists lets us answer all queries in one linear pas
 Once ranges are merged, each interval `[start, end]` contributes `end - start + 1` unique IDs. Just sum them.
 
 **Why merging matters:** The real input had ranges spanning up to 350 trillion total IDs. Without merging overlapping ranges, you'd either double-count or need an impossibly large bitmap. The merge-then-sum approach handles astronomical ranges trivially—we never enumerate individual IDs, just compute interval arithmetic.
+
+## Day 6: Trash Compactor
+
+**Problem:** Parse a horizontally-arranged math worksheet. Numbers are stacked vertically in columns, with an operator (`+` or `*`) at the bottom. Columns are separated by blank-space columns.
+
+### Part 1
+Standard reading: each whitespace-separated token is a number. Tokens at the same position across rows form a problem.
+
+**Approach:** Array of number arrays — O(rows × problems) time.
+- Split each row on whitespace, distribute tokens positionally
+- `problems[i]` = array of numbers for problem i
+- When operator row is reached, reduce each array and sum results
+
+**Data model proposed by user:** `problems[col][row]` = number. Simple positional distribution.
+
+### Part 2
+**Twist:** Cephalopod math reads column-by-column. Each *character column* forms a number (top-to-bottom = MSD to LSD). Problems are processed right-to-left.
+
+**Approach:** Character grid — O(rows × cols) time.
+- Parse input as 2D character grid: `grid[row][col]`
+- Identify separator columns (all spaces in number rows)
+- Group consecutive non-separator columns into problem blocks
+- For each block (right-to-left), each character column becomes a number
+- Apply operator, sum results
+
+**Data model proposed by user:** `problems[col][row][char]` = character. The initial attempt using whitespace-split tokens failed because it lost character-position alignment. The character grid preserves exact spacing needed for column-wise number reconstruction.
+
+**Key insight:** When input alignment matters, parse as a character grid rather than splitting on whitespace. Whitespace-splitting loses positional information that may be semantically significant.

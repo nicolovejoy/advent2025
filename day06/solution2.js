@@ -6,50 +6,16 @@ const inputFile = process.argv[2] === 'sample' ? 'sample.txt' : 'input.txt';
 const input = fs.readFileSync(path.join(__dirname, inputFile), 'utf8').trim();
 const lines = input.split('\n');
 
-// Part 1
-function part1(lines) {
-  const problems = []; // array of arrays, one per problem column
-
-  for (const line of lines) {
-    const tokens = line.trim().split(/\s+/);
-
-    // Check if this is the operator row (first token is + or *)
-    if (tokens[0] === '+' || tokens[0] === '*') {
-      // Apply operators and sum results
-      let grandTotal = 0;
-      for (let i = 0; i < tokens.length; i++) {
-        const op = tokens[i];
-        const nums = problems[i];
-        const result = op === '+'
-          ? nums.reduce((a, b) => a + b, 0)
-          : nums.reduce((a, b) => a * b, 1);
-        grandTotal += result;
-      }
-      console.log(`  ${problems.length} problems solved`);
-      return grandTotal;
-    }
-
-    // Number row - distribute tokens to problem arrays
-    for (let i = 0; i < tokens.length; i++) {
-      if (!problems[i]) problems[i] = [];
-      problems[i].push(parseInt(tokens[i], 10));
-    }
-  }
-
-  return 0; // shouldn't reach here
-}
-
-// Part 2
+// Part 2: Cephalopod math (right-to-left, column-wise numbers)
 function part2(lines) {
   // Parse as character grid
   const maxLen = Math.max(...lines.map(l => l.length));
   const grid = lines.map(l => l.padEnd(maxLen, ' '));
   const numRows = grid.length;
   const numCols = maxLen;
-  const opRow = numRows - 1; // last row has operators
+  const opRow = numRows - 1;
 
-  // Find problem boundaries (columns that are all spaces except maybe operator row)
-  // A separator column is all spaces in number rows
+  // Separator column = all spaces in number rows
   const isSeparator = (col) => {
     for (let row = 0; row < opRow; row++) {
       if (grid[row][col] !== ' ') return false;
@@ -57,8 +23,9 @@ function part2(lines) {
     return true;
   };
 
-  // Group columns into problems
-  const problems = []; // each problem = { cols: [...], op: '+' or '*' }
+  // Group character columns into problem blocks
+  // problems[p][charCol][row] = character
+  const problems = []; // each = { cols: [col indices], op }
   let currentCols = [];
   let currentOp = null;
 
@@ -71,8 +38,8 @@ function part2(lines) {
       }
     } else {
       currentCols.push(col);
-      const opChar = grid[opRow][col];
-      if (opChar === '+' || opChar === '*') currentOp = opChar;
+      const ch = grid[opRow][col];
+      if (ch === '+' || ch === '*') currentOp = ch;
     }
   }
   if (currentCols.length > 0) {
@@ -83,8 +50,7 @@ function part2(lines) {
   let grandTotal = 0;
   for (let p = problems.length - 1; p >= 0; p--) {
     const { cols, op } = problems[p];
-    // Each column becomes a number (read top-to-bottom = MSD to LSD)
-    // Process columns right-to-left within the problem
+    // Read columns right-to-left; each column = one number (top-to-bottom digits)
     const nums = [];
     for (let c = cols.length - 1; c >= 0; c--) {
       const col = cols[c];
@@ -107,6 +73,5 @@ function part2(lines) {
   return grandTotal;
 }
 
-console.log(`Day 6 (${inputFile})`);
-console.log('Part 1:', part1(lines));
+console.log(`Day 6 Part 2 (${inputFile})`);
 console.log('Part 2:', part2(lines));

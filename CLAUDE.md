@@ -13,6 +13,9 @@ This is an Advent of Code 2025 solutions repository using JavaScript with Node.j
 ## Structure
 
 - `dayNN/` - Each day's solution, input, and puzzle description
+  - `solution.js` - Part 1 solution
+  - `solution2.js` - Part 2 solution (separate script)
+  - `sample.txt` and `input.txt` - Shared between parts
 - `LEARNINGS.md` - Key algorithmic insights from all days
 
 ## Solution Design Process
