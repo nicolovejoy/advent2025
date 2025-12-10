@@ -49,3 +49,25 @@ Beam moves down from `S`, splits left/right at `^` splitters.
 **Part 2:** Count timelines (many-worlds). Row-by-row with `Map<column, count>`. N timelines hitting splitter → N left + N right. Used BigInt (~6T timelines).
 
 **Insight:** Set → Map is classic Part 1 → Part 2 pattern. Existence vs cardinality — same algorithm, different data structure. Unidirectional movement means sweep beats graph traversal.
+
+## Day 8: Playground (Junction Boxes)
+
+Connect 3D points by shortest distances, track circuit formation.
+
+**Part 1:** Connect 1000 closest pairs, return product of 3 largest circuit sizes.
+
+**Part 2:** Connect until one circuit, return product of X coords of last pair merged.
+
+**Approach:** Brute force all N×(N-1)/2 pairs (499,500 for N=1000), sort by distance, Union-Find to track circuits.
+
+**Key techniques:**
+
+1. **Squared distance** — skip sqrt, ordering preserved. Faster comparison.
+
+2. **Union-Find with path compression** — canonical data structure for dynamic connectivity. Each node tracks its parent; find() walks to root. Path compression: when finding root, update every node along the path to point directly to root. Transforms O(N) chains into O(1) lookups. Amortized O(α(N)) per operation where α is inverse Ackermann (effectively constant).
+
+3. **Min-heap alternative** — could track only K smallest pairs as we iterate, saving O(N²) → O(K) space. Same time complexity. For this problem size, full sort is simpler and fast enough.
+
+4. **Tree connectivity** — N nodes require exactly N-1 edges to form connected tree. Part 2 stopping condition: count successful merges until reaching N-1.
+
+**Insight:** Part 1 vs Part 2 used identical algorithm with different stopping conditions — fixed count (1000 operations) vs invariant (single circuit). Union-Find is the go-to for "are these connected?" and "merge these groups" operations. When N is small enough (here ~500K pairs), brute force + sort beats clever spatial data structures in simplicity and often in raw speed.
