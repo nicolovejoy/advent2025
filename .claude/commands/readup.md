@@ -17,10 +17,4 @@ Resume work on this repository by gathering context and understanding where we l
 
 ## 3. Ask the User 3 Questions
 
-After gathering context, ask the user:
-
-1. **Continue or new?** - Are we continuing previous work or starting something new (e.g., a new day's puzzle)?
-2. **Current goal** - What's the main thing you want to accomplish this session?
-3. **Any blockers?** - Is there anything you were stuck on or want to approach differently?
-
-Then proceed based on their answers, following the Solution Design Process from CLAUDE.md.
+look to see if there's a new day to start working on, or prompt the user if puzzle.txt isn't modified in the next day
