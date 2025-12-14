@@ -71,3 +71,35 @@ Connect 3D points by shortest distances, track circuit formation.
 4. **Tree connectivity** — N nodes require exactly N-1 edges to form connected tree. Part 2 stopping condition: count successful merges until reaching N-1.
 
 **Insight:** Part 1 vs Part 2 used identical algorithm with different stopping conditions — fixed count (1000 operations) vs invariant (single circuit). Union-Find is the go-to for "are these connected?" and "merge these groups" operations. When N is small enough (here ~500K pairs), brute force + sort beats clever spatial data structures in simplicity and often in raw speed.
+
+## Day 9: Movie Theater (Rectilinear Polygon)
+
+Given red tile coordinates forming vertices of a closed rectilinear polygon. Find largest rectangle with red tiles at opposite corners.
+
+**Part 1:** Brute force all pairs, compute area. O(N²).
+
+**Part 2:** Rectangle must lie entirely inside the polygon (red + green tiles only). Green tiles = edges between consecutive vertices + polygon interior.
+
+**Approach:** Coordinate compression + flood fill + 2D prefix sums.
+
+1. **Coordinate compression** — With N=496 vertices, only 247 unique X and 248 unique Y values. Work in compressed ~250×250 grid instead of 85K×85K original space.
+
+2. **Polygon boundary** — Mark all cells along edges between consecutive vertices (they share X or Y, so edges are axis-aligned).
+
+3. **Flood fill with padding** — Add 1-cell border around compressed grid, shift boundary by +1. Now (0,0) is guaranteed outside. BFS from there finds all outside cells.
+
+4. **2D prefix sums** — Precompute cumulative "outside cell" counts. Query any rectangle for outside cells in O(1) using inclusion-exclusion.
+
+5. **Validate pairs** — For each red tile pair, check if their rectangle contains any outside cells. If not, compute area using original (uncompressed) coordinates.
+
+**Failed simplification:** Tried checking if any vertex lies strictly inside the candidate rectangle. Doesn't work — concave polygons can have "bites" (outside regions) that contain no vertices.
+
+**Key techniques:**
+
+1. **Coordinate compression** — When only relative positions matter, map sparse coordinates to dense indices. Reduces 85K² space to 250².
+
+2. **Flood fill from outside** — Padding trick ensures a known-outside starting point. Everything reachable from border without crossing boundary is outside; rest is inside.
+
+3. **2D prefix sums** — Classic technique for O(1) rectangle queries. Build in O(N²), query with inclusion-exclusion: `prefix[y2][x2] - prefix[y1][x2] - prefix[y2][x1] + prefix[y1][x1]`.
+
+**Insight:** For rectilinear polygons, coordinate compression is powerful because the polygon's structure only changes at vertex coordinates. Flood fill correctly handles arbitrary concave shapes where simpler vertex-checking heuristics fail.
